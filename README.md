@@ -12,7 +12,7 @@ In addition to these attributes other more nebulous factors such as a paragraph 
 
 ### Parsing
 * Find similes  
-* Identify Rhyme (separate dictionary or schema?)
+* Identify Rhyme ([cmu pronunciation dict](http://www.speech.cs.cmu.edu/cgi-bin/cmudict))
 
 
 ### Semantic 
