@@ -11,7 +11,7 @@ This class reperesents a poem and the fundemental components contained within it
 from Levenshtein import distance as dis
 #----------------
 # Class
-#----------------
+#------------ ----
 
 class Poem:
     def __init__(self, attributes: dict, textAuthor = "", text = "", PublishedYear = 0):
