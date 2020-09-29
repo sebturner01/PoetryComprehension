@@ -1,10 +1,10 @@
-    # Author: Damian Armijo and Sebastian Turner 
+# Author: Damian Armijo and Sebastian Turner 
 # Date: 09/26/20
 # This is the testing module for the Poetry comprehension package. 
 # As of (09/20) it will only consist of unit tests.
 
-from Parser import readFromTextFile
-from parser import makePoem
+import Parser
+import PoemAnalyzer
 
 
 name = "TestResults.txt"
@@ -33,8 +33,12 @@ if __name__ == "__main__":
     poems.append(poem)
 
    
-    """Testing Parser and Poem class Funcitons"""
-    
+    """Testing Parser, Poem class and PoemAnalyzer Funcitons"""
+    for p in poems:
+        PoemAnalyzer.getPoemPhones(p)
+        PoemAnalyzer.findAlliteration(p)
+
+    # Prints a poem's text and attributes to the testing file
     with open(name, 'a') as f:
         for p in poems:
             newPoem = makePoem(p)
