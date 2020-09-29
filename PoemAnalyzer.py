@@ -30,6 +30,9 @@ def getPoemPhones(poem: Poem):
     # TODO: Replace with basic CMUdict lookup
     phones = []
     words = nltk.tokenize.word_tokenize(poem.content)
+    words = list(
+        filter(lambda a: len(a) > 0 and a[0].isalpha(), words)
+    )  # Remove symbols from list
     for w in words:
         phones.append(pronouncing.phones_for_word(w))
     poem.attributes["phones"] = phones
@@ -53,13 +56,13 @@ def findAlliteration(poem):
         poem - an instance of a poem class.
 
     Outputs:
-        allitDict - a dictionary of alliterations in the poem
-            ex:{alliteration starting word #: ending word #, ...}
+        allitDict - a dictionary of alliterations in the poem 
+            {alliteration starting word #: ending word #, ...}
 
     """
-
+    # TODO: Test fully to see if works correctly
+    #   Test speed
     phones = poem.attributes["phones"]  # [['HH AH0 L OW1', 'HH EH0 L OW1',...],...]
-
     listOfFrontSounds = getFrontSounds(phones)
     allitDict = dictFromFrontSounds(listOfFrontSounds)
 
@@ -67,24 +70,23 @@ def findAlliteration(poem):
 
 
 def dictFromFrontSounds(listOfFrontSounds):
-    """Function used by findAlliteration() which makes a dictionary of alliteration
+    """Function used by findAlliteration() which makes a dictionary of alliteration 
         from a list of front sounds.
 
     Inputs:
         listOfFrontSounds - a list of starting sounds of
 
     Outputs:
-        allitDict - a dictionary of alliterations in the poem {alliteration starting
-            word #: ending word #, ...}
+        allitDict - a dictionary of alliterations in the poem 
+            {alliteration starting word #: ending word #, ...}
 
     """
     allitDict = dict()
     frontOfList = listOfFrontSounds[0]
     foundSame = False
     count = 0
-
-    for i in range(1, len(listOfFrontSounds)):
-        newList = listOfFrontSounds[i]
+    for index, sound in enumerate(listOfFrontSounds[1:], 1):
+        newList = sound
         foundSame = False
         for x in newList:
             if frontOfList.count(x) > 0:
@@ -93,16 +95,15 @@ def dictFromFrontSounds(listOfFrontSounds):
 
         if foundSame:
             count += 1
-        if not foundSame:
-            if count > 0:
-                allitDict[i - count] = i
+        elif count > 0:
+            allitDict[index - (count + 1)] = index - 1
             count = 0
         frontOfList = newList
     return allitDict
 
 
 def getFrontSounds(phones):
-    """Function used by findAlliteration() which makes a list of front sounds
+    """Function used by findAlliteration() which makes a list of front sounds 
         from a list of word sounds.
 
     Inputs:
@@ -119,5 +120,28 @@ def getFrontSounds(phones):
             firstSound = sounds.split()[0]
             tempSet.add(firstSound)
         listOfFrontSounds.append(list(tempSet))
-    listOfFrontSounds = [x for x in listOfFrontSounds if x != []]
+    return fixNotInCMU(listOfFrontSounds)
+
+
+def fixNotInCMU(listOfFrontSounds):
+    """Function used by getFrontSounds() which adds placeholders ('1','2') to listOfFrontSounds
+        for words not in CMU dictionary ***THIS SHOULD BE CHANGED LATER***.
+
+    Inputs:
+        listOfFrontSounds - a list of starting sounds of words.
+
+    Outputs:
+        listOfFrontSounds - a list of starting sounds of words(adjusted).
+
+    """
+    # TODO: add words to dictionary! Not '1', '2' placeholder shenanigans
+    switcher = True
+    for sound in listOfFrontSounds:
+        if sound == []:
+            if switcher:
+                sound = ["1"]
+            else:
+                sound = ["2"]
+            switcher = not switcher
+
     return listOfFrontSounds
