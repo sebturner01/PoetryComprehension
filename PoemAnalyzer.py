@@ -56,7 +56,7 @@ def findAlliteration(poem):
         poem - an instance of a poem class.
 
     Outputs:
-        allitDict - a dictionary of alliterations in the poem 
+        allitDict - a dictionary of alliterations in the poem
             {alliteration starting word #: ending word #, ...}
 
     """
@@ -70,14 +70,14 @@ def findAlliteration(poem):
 
 
 def dictFromFrontSounds(listOfFrontSounds):
-    """Function used by findAlliteration() which makes a dictionary of alliteration 
+    """Function used by findAlliteration() which makes a dictionary of alliteration
         from a list of front sounds.
 
     Inputs:
         listOfFrontSounds - a list of starting sounds of
 
     Outputs:
-        allitDict - a dictionary of alliterations in the poem 
+        allitDict - a dictionary of alliterations in the poem
             {alliteration starting word #: ending word #, ...}
 
     """
@@ -103,7 +103,7 @@ def dictFromFrontSounds(listOfFrontSounds):
 
 
 def getFrontSounds(phones):
-    """Function used by findAlliteration() which makes a list of front sounds 
+    """Function used by findAlliteration() which makes a list of front sounds
         from a list of word sounds.
 
     Inputs:
@@ -137,7 +137,7 @@ def fixNotInCMU(listOfFrontSounds):
     # TODO: add words to dictionary! Not '1', '2' placeholder shenanigans
     switcher = True
     for sound in listOfFrontSounds:
-        if sound == []:
+        if sound:
             if switcher:
                 sound = ["1"]
             else:
