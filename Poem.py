@@ -5,9 +5,9 @@ Date: 09/23/19
 This class reperesents a poem and the fundemental components contained within it.
 """
 
-#----------------
-# Init 
-#----------------
+# ----------------
+# Init
+# ----------------
 from Levenshtein import distance as dis
 #----------------
 # Class
@@ -54,3 +54,4 @@ class Poem:
         print(f'{key} is not an attribute did you mean?\n')
         for attr in self.attributes:
             if dis(key, attr) < 2:
+              return None
