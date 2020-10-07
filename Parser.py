@@ -15,13 +15,16 @@ from os import path
 
 def readFromTextFile(fileString):
     """ This function reads the file from the provided string and returns the read string """
-
-    if path.exists(fileString):
-
+    if fileExists(fileString):
         f = open(fileString, "r", encoding="utf-8")
         return f.read()
 
-    return None
+
+def fileExists(fileString):
+    """ This function returns true if a file exists. """
+    if not path.exists(fileString):
+        print("Error File does not exist")
+    return path.exists(fileString)
 
 
 def lineCount(poemString):
