@@ -9,6 +9,7 @@
 import pronouncing
 import Poem
 import nltk
+import copy
 
 # -----------------
 # Functions
@@ -47,6 +48,43 @@ def findAllRhymes(poem: Poem):
 
 def findSingleRhyme(poem):
     return
+
+
+def findEndRhyme(poem: Poem):
+    """Adds a poems end Rhymes to its attributes
+
+    Inputs:
+        poem - an instance of a poem class.
+
+    Outputs:
+        endRhymes - a dictionary of end rhymes in the poem
+            {(word,line #): [(word,line #), ...]}
+
+    """
+    # TODO: make more efficient
+    endingWords = enumerate(getEndWords(poem.content))
+    endRhymes = {}
+    for lineNum, word in endingWords:
+        tempSet = set()
+        endingWords2 = copy.deepcopy(endingWords)
+        for lineNum2, word2 in endingWords2:
+            if word2 in pronouncing.rhymes(word):
+                tempSet.add((lineNum2, word2))
+        endRhymes[(lineNum, word)] = list(tempSet)
+    poem.attributes["endRhymes"] = endRhymes
+
+
+def getEndWords(poemString):
+
+    endingWordsList = []
+    splitPoem = poemString.splitlines()
+
+    for line in splitPoem:
+        words = nltk.tokenize.word_tokenize(line)
+        words = list(filter(lambda a: len(a) > 0 and a[0].isalpha(), words))
+        if len(words) > 0:
+            endingWordsList.append(words[-1])
+    return endingWordsList
 
 
 def findAlliteration(poem):
