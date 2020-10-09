@@ -10,6 +10,7 @@ import pronouncing
 import Poem
 import nltk
 import copy
+import re
 
 # -----------------
 # Functions
@@ -30,10 +31,7 @@ def getPoemPhones(poem: Poem):
     """
     # TODO: Replace with basic CMUdict lookup
     phones = []
-    words = nltk.tokenize.word_tokenize(poem.content)
-    words = list(
-        filter(lambda a: len(a) > 0 and a[0].isalpha(), words)
-    )  # Remove symbols from list
+    words = sanitizeWords(poem.content)
     for w in words:
         phones.append(pronouncing.phones_for_word(w))
     poem.attributes["phones"] = phones
@@ -62,6 +60,7 @@ def findEndRhyme(poem: Poem):
 
     """
     # TODO: make more efficient
+    # make more pythonic
     endingWords = enumerate(getEndWords(poem.content))
     endRhymes = {}
     for lineNum, word in endingWords:
@@ -80,14 +79,32 @@ def getEndWords(poemString):
     splitPoem = poemString.splitlines()
 
     for line in splitPoem:
-        words = nltk.tokenize.word_tokenize(line)
-        words = list(filter(lambda a: len(a) > 0 and a[0].isalpha(), words))
+        words = sanitizeWords(line)
         if len(words) > 0:
             endingWordsList.append(words[-1])
     return endingWordsList
 
 
-def findAlliteration(poem):
+def sanitizeWords(content):
+    """Removes symbols from the words from the content of a poem.
+
+    Inputs:
+        content - a string, of the content of a Poem.
+
+    Outputs:
+        words - a list of nltk tokenized words from the content
+             ['An','example',...]
+    """
+    # TODO: check to make sure it works to the full extent.
+    # Maybe store in the poem.
+    words = nltk.tokenize.word_tokenize(content)
+    words = list(
+        filter(lambda a: len(a) > 0 and a[0].isalpha(), words)
+    )  # Remove symbols from list
+    return words
+
+
+def findAlliteration(poem: Poem):
     """Adds a poems alliterations to its attributes
 
     Inputs:
@@ -103,7 +120,7 @@ def findAlliteration(poem):
     phones = poem.attributes["phones"]  # [['HH AH0 L OW1', 'HH EH0 L OW1',...],...]
     listOfFrontSounds = getFrontSounds(phones)
     allitDict = dictFromFrontSounds(listOfFrontSounds)
-
+    poem.attributes["alliteration"] = allitDict
     return allitDict
 
 
@@ -183,3 +200,21 @@ def fixNotInCMU(listOfFrontSounds):
             switcher = not switcher
 
     return listOfFrontSounds
+
+
+def getSimilies(poem: Poem):
+    """Adds a poems similies to its attributes
+
+    Inputs:
+        poem - an instance of a poem class.
+
+    Outputs:
+        No direct output. However, the instance of the poem class that was passed
+        to this function does gain a "similies" attribute that contains the regex
+        defined, group of similies in the poem.
+
+    """
+    # TODO: break this regex, or find it magically works.
+    words = poem.content
+    similies = re.search(r"(?i)\blike (a|an|the)\b|as \w{1,} as (a|an|the)", str(words))
+    poem.attributes["similies"] = similies
