@@ -218,3 +218,58 @@ def getSimilies(poem: Poem):
     words = poem.content
     similies = re.search(r"(?i)\blike (a|an|the)\b|as \w{1,} as (a|an|the)", str(words))
     poem.attributes["similies"] = similies
+=======
+
+
+def getSyllableCount(poem: Poem):
+    """Adds a poems similies to its attributes
+
+    Inputs:
+        poem - an instance of a poem class.
+
+    Outputs:
+        No direct output. However, the instance of the poem class that was passed
+        to this function does gain a "similies" attribute that contains the regex
+        defined, group of similies in the poem.
+
+    """
+    # TODO: check validity
+    flatten = lambda l: [
+        item for sublist in l for item in sublist
+    ]  # this flattens list of lists to list
+
+    phones = poem.attributes["phones"]
+    phones = flatten(removeSyllableDuplicates(phones))
+    poem.attributes["syllableCount"] = sum(
+        [pronouncing.syllable_count(p) for p in phones]
+    )
+
+
+def removeSyllableDuplicates(syllableList):
+    """This is a helper function that removes duplicate phonetic breakups
+    that comes from pronouncing library.
+    Ex: [['S N OW1'], ['B IY1', 'B IY0']] --> [['S N OW1'], ['B IY1']]
+    """
+    plist = []
+    for x in syllableList:
+        if len(x) > 1:
+            plist.append(x[0])
+        else:
+            plist.append(x)
+    return plist
+
+
+def getStanzaCount(poem: Poem):
+    """Adds a poems stanzaCount to its attributes
+
+    Inputs:
+        poem - an instance of a poem class.
+
+    Outputs:
+        No direct output. However, the instance of the poem class that was passed
+        to this function does gain a "stanzaCount" attribute that contains the
+        poems stanza count.
+
+    """
+    stanzaCount = poem.content.count("\n\n") + 1
+    poem.attributes["stanzaCount"] = stanzaCount
