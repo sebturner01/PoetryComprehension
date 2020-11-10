@@ -9,6 +9,8 @@
 import pronouncing
 import Poem
 import nltk
+import copy
+import re
 
 # -----------------
 # Functions
@@ -29,10 +31,7 @@ def getPoemPhones(poem: Poem):
     """
     # TODO: Replace with basic CMUdict lookup
     phones = []
-    words = nltk.tokenize.word_tokenize(poem.content)
-    words = list(
-        filter(lambda a: len(a) > 0 and a[0].isalpha(), words)
-    )  # Remove symbols from list
+    words = sanitizeWords(poem.content)
     for w in words:
         phones.append(pronouncing.phones_for_word(w))
     poem.attributes["phones"] = phones
@@ -49,7 +48,63 @@ def findSingleRhyme(poem):
     return
 
 
-def findAlliteration(poem):
+def findEndRhyme(poem: Poem):
+    """Adds a poems end Rhymes to its attributes
+
+    Inputs:
+        poem - an instance of a poem class.
+
+    Outputs:
+        endRhymes - a dictionary of end rhymes in the poem
+            {(word,line #): [(word,line #), ...]}
+
+    """
+    # TODO: make more efficient
+    # make more pythonic
+    endingWords = enumerate(getEndWords(poem.content))
+    endRhymes = {}
+    for lineNum, word in endingWords:
+        tempSet = set()
+        endingWords2 = copy.deepcopy(endingWords)
+        for lineNum2, word2 in endingWords2:
+            if word2 in pronouncing.rhymes(word):
+                tempSet.add((lineNum2, word2))
+        endRhymes[(lineNum, word)] = list(tempSet)
+    poem.attributes["endRhymes"] = endRhymes
+
+
+def getEndWords(poemString):
+
+    endingWordsList = []
+    splitPoem = poemString.splitlines()
+
+    for line in splitPoem:
+        words = sanitizeWords(line)
+        if len(words) > 0:
+            endingWordsList.append(words[-1])
+    return endingWordsList
+
+
+def sanitizeWords(content):
+    """Removes symbols from the words from the content of a poem.
+
+    Inputs:
+        content - a string, of the content of a Poem.
+
+    Outputs:
+        words - a list of nltk tokenized words from the content
+             ['An','example',...]
+    """
+    # TODO: check to make sure it works to the full extent.
+    # Maybe store in the poem.
+    words = nltk.tokenize.word_tokenize(content)
+    words = list(
+        filter(lambda a: len(a) > 0 and a[0].isalpha(), words)
+    )  # Remove symbols from list
+    return words
+
+
+def findAlliteration(poem: Poem):
     """Adds a poems alliterations to its attributes
 
     Inputs:
@@ -65,7 +120,7 @@ def findAlliteration(poem):
     phones = poem.attributes["phones"]  # [['HH AH0 L OW1', 'HH EH0 L OW1',...],...]
     listOfFrontSounds = getFrontSounds(phones)
     allitDict = dictFromFrontSounds(listOfFrontSounds)
-
+    poem.attributes["alliteration"] = allitDict
     return allitDict
 
 
@@ -163,6 +218,7 @@ def getSimilies(poem: Poem):
     words = poem.content
     similies = re.search(r"(?i)\blike (a|an|the)\b|as \w{1,} as (a|an|the)", str(words))
     poem.attributes["similies"] = similies
+=======
 
 
 def getSyllableCount(poem: Poem):
